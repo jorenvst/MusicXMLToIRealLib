@@ -23,7 +23,7 @@ public class IRealProDocument {
      */
     public void build(String path) {
         try {
-            String fileName = path + title + ".html";
+            String fileName = path + "/" + title + ".html";
             File irealFile = new File(fileName);
 
             if (irealFile.createNewFile()) {
