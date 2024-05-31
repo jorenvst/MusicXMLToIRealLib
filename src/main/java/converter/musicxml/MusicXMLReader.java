@@ -26,7 +26,7 @@ public class MusicXMLReader {
     private final Properties keys;
 
     public MusicXMLReader() {
-        try (InputStream in = this.getClass().getResourceAsStream("/resources/keys.properties")) {
+        try (InputStream in = MusicXMLReader.class.getResourceAsStream("/keys.properties")) {
             keys = new Properties();
             keys.load(in);
         } catch (IOException e) {
@@ -39,7 +39,7 @@ public class MusicXMLReader {
      * @param path the path to the musicxml file
      * @return a list of Song objects
      */
-    public List<Song> readSong(String path) {
+    public List<Song> readSongs(String path) {
 
         List<Song> songs = new ArrayList<>();
         Element root = getRoot(path);
@@ -65,6 +65,15 @@ public class MusicXMLReader {
         return readSongPart(part, root);
     }
 
+    private Song readSongPart(Element part, Element root) {
+        String key = keys.getProperty(part.getChild("measure").getChild("attributes").getChild("key").getChildText("fifths"));
+        List<Measure> measures = part.getChildren("measure").stream().map(MeasureFactory::buildMeasure).toList();
+        return new Song(getTitle(root), getComposer(root), key, measures);
+    }
+
+    /**
+     * get root element of musicxml
+     */
     private Element getRoot(String path) {
         try {
             SAXBuilder builder = new SAXBuilder();
@@ -75,12 +84,6 @@ public class MusicXMLReader {
         } catch (IOException | JDOMException e) {
             throw new RuntimeException("Could not parse the musicxml file", e);
         }
-    }
-
-    private Song readSongPart(Element part, Element root) {
-        String key = keys.getProperty(part.getChild("measure").getChild("attributes").getChild("key").getChildText("fifths"));
-        List<Measure> measures = part.getChildren("measure").stream().map(MeasureFactory::buildMeasure).toList();
-        return new Song(getTitle(root), getComposer(root), key, measures);
     }
 
     private String getTitle(Element root) {

@@ -30,12 +30,12 @@ public class MusicXMLConverter {
     public MusicXMLConverter() {
         // load properties upon creation
         try (
-                InputStream in1 = this.getClass().getResourceAsStream("/resources/time.properties");        // for translating time signatures
-                InputStream in2 = this.getClass().getResourceAsStream("/resources/chords.properties");      // for translating chords
-                InputStream in3 = this.getClass().getResourceAsStream("/resources/bar-lines.properties")    // for translating bar lines
+                InputStream in1 = MusicXMLConverter.class.getResourceAsStream("/time.properties");        // for translating time signatures
+                InputStream in2 = MusicXMLConverter.class.getResourceAsStream("/chords.properties");      // for translating chords
+                InputStream in3 = MusicXMLConverter.class.getResourceAsStream("/bar-lines.properties")    // for translating bar lines
         ) {
             // valid-alterations contains a list with all IReal Pro valid chord extensions/alterations
-            Document document = new SAXBuilder().build(this.getClass().getResourceAsStream("/resources/valid-alterations.xml"));
+            Document document = new SAXBuilder().build(MusicXMLConverter.class.getResourceAsStream("/valid-alterations.xml"));
             validQualities = document.getRootElement().getChildren("element")
                     .stream().map(Element::getText).collect(Collectors.toSet());
 
@@ -66,7 +66,7 @@ public class MusicXMLConverter {
      */
     public List<IRealProDocument> convert(String path) {
         // read the song from the musicxml file
-        List<Song> songs = reader.readSong(path);
+        List<Song> songs = reader.readSongs(path);
         List<IRealProDocument> documents = new ArrayList<>();
         for (Song song : songs) {
             documents.add(new IRealProDocument(songToURL(song), song.getTitle()));
