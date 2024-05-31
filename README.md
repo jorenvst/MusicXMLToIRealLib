@@ -18,7 +18,11 @@ You can use it in your code as follows:
 This code converts and builds each part of a partwise <code>.musicxml</code> into a <code>.html</code> for IReal Pro. The files are built in the directory from where the application was launched.<br>
 Full documentation: see next chapter.
 
-<h2>3. Documentation</h2>
+<h2>3. Dependencies</h2>
+
+This project needs [JDOM v2.0.6.1](https://mvnrepository.com/artifact/org.jdom/jdom2/2.0.6.1) to run.
+
+<h2>4. Documentation</h2>
 
 <h3>MusicXMLReader</h3>
 
