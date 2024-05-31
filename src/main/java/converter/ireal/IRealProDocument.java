@@ -10,19 +10,20 @@ import java.io.IOException;
 public class IRealProDocument {
 
     private final String content;
+    private final String title;
 
     public IRealProDocument(String url, String songTitle) {
         this.content = "<a href=\"" + url + "\">" + songTitle + "</a>\n";
+        this.title = songTitle;
     }
 
     /**
      * build an ireal pro file
-     * @param path the directory where the original .musicxml is located
-     *             this is also where the new IReal Pro file will be saved to
+     * @param path the directory where the file should be saved
      */
     public void build(String path) {
         try {
-            String fileName = path.substring(path.lastIndexOf("/") + 1, path.lastIndexOf(".")) + ".html";
+            String fileName = path + title + ".html";
             File irealFile = new File(fileName);
 
             if (irealFile.createNewFile()) {
@@ -38,8 +39,19 @@ public class IRealProDocument {
         }
     }
 
+    /**
+     * build an ireal pro file in the current working directory
+     */
+    public void build() {
+        build(System.getProperty("user.dir"));
+    }
+
+    public String getContent() {
+        return content;
+    }
+
     @Override
     public String toString() {
-        return this.content;
+        return content;
     }
 }
