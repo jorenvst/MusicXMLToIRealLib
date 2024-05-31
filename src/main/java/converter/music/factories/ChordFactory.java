@@ -25,7 +25,7 @@ public class ChordFactory {
         String bass = null;
         List<String> alterations = new ArrayList<>();
 
-        try (InputStream in2 = ChordFactory.class.getResourceAsStream("/resources/chords.properties")) {
+        try (InputStream in2 = ChordFactory.class.getResourceAsStream("/chords.properties")) {
             Properties chords = new Properties();
             chords.load(in2);
 
