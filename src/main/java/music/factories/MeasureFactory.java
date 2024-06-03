@@ -1,8 +1,8 @@
-package converter.music.factories;
+package music.factories;
 
-import converter.music.Measure;
-import converter.music.Time;
-import converter.musicxml.Repetition;
+import music.Measure;
+import musicxml.Repetition;
+import music.Time;
 import org.jdom2.Element;
 
 /**
@@ -33,6 +33,7 @@ public class MeasureFactory {
                     Integer.parseInt(measure.getChild("attributes").getChild("time").getChildText("beat-type"))
             );
         }
+
         return new Measure(
                 measure.getChildren("harmony").stream().map(ChordFactory::buildChord).toList(),
                 time,

@@ -1,4 +1,4 @@
-package converter.music;
+package music;
 
 /**
  * Time --- represents a time signature

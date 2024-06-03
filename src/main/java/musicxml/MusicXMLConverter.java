@@ -1,14 +1,15 @@
-package converter.musicxml;
+package musicxml;
 
-import converter.ireal.IRealProDocument;
-import converter.music.Chord;
-import converter.music.Measure;
-import converter.music.Song;
+import music.Measure;
+import ireal.IRealProDocument;
+import music.Chord;
+import music.Song;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
@@ -61,12 +62,12 @@ public class MusicXMLConverter {
 
     /**
      * convert a file to an IReal Pro document
-     * @param path the path to the musicxml file that needs to be converted
+     * @param file the musicxml file that needs to be converted
      * @return a new IReal Pro Document
      */
-    public List<IRealProDocument> convert(String path) {
+    public List<IRealProDocument> convert(File file) {
         // read the song from the musicxml file
-        List<Song> songs = reader.readSongs(path);
+        List<Song> songs = reader.readSongs(file);
         List<IRealProDocument> documents = new ArrayList<>();
         for (Song song : songs) {
             documents.add(new IRealProDocument(songToURL(song), song.getTitle()));
@@ -74,13 +75,13 @@ public class MusicXMLConverter {
         return documents;
     }
 
-    public IRealProDocument convertPart(String path, int part) {
-        Song song = reader.readSongPart(path, part);
+    public IRealProDocument convertPart(File file, int part) {
+        Song song = reader.readSongPart(file, part);
         return new IRealProDocument(songToURL(song), song.getTitle());
     }
 
-    public IRealProDocument convertPart(String path) {
-        Song song = reader.readSongPart(path, 0);
+    public IRealProDocument convertPart(File file) {
+        Song song = reader.readSongPart(file, 0);
         return new IRealProDocument(songToURL(song), song.getTitle());
     }
 
@@ -109,60 +110,80 @@ public class MusicXMLConverter {
 
         String lastChord = null;
         Measure lastMeasure = null;
+        int count = 0;
         for (Measure measure : measures) {
-            if (measure.hasTime()) {
-                // if the key signature doesn't exist in IReal Pro, throw an exception
-                if (!time.containsKey(measure.getTime().toString())) {
-                    throw new RuntimeException("This time signature is invalid for IReal Pro");
-                }
-                builder.append(time.getProperty(measure.getTime().toString()));
-            }
+            builder.append(buildTimeSignature(measure));
             // only include the measure if it is not implicit
             if (!measure.isImplicit()) {
+                // append bar line
                 builder.append(barLines.getProperty(measure.getBarLineType() + barLineMap.get(measure.getRepetition())));
+                if (count == 4) {
+                    builder.append("Y");
+                    count = 0;
+                }
+
                 if (measure.getChords().isEmpty()) {
-                    if (lastMeasure != null && lastMeasure.getChords().size() == 1) {
-                        // repeat last measure if this measure has no chords and last measure with a chord only had one chord
-                        builder.append("x ");
-                    } else if (lastChord == null) {
-                        // play no chord if this is the first measure
-                        builder.append("n ");
-                    } else {
-                        // repeat only the last chord if the previous measure with a chord had multiple chords
-                        builder.append(lastChord).append(" ");
-                    }
+                    builder.append(buildEmptyMeasure(measure, lastMeasure, lastChord));
                 }
 
-                // put each measure into the IReal Pro song builder
+                // put each chord into the IReal Pro song builder
                 for (Chord chord : measure.getChords()) {
-                    StringBuilder iRealChord = new StringBuilder();
-                    iRealChord.append(chord.root());
-
-                    StringBuilder quality = new StringBuilder();
-                    quality.append(chords.getProperty(chord.kind()));
-                    for (String alteration : chord.alterations()) {
-                        quality.append(alteration);
-                    }
-
-                    if (qualityIsValid(quality.toString())) {
-                        iRealChord.append(quality);
-                    } else {
-                        throw new RuntimeException(quality + "is an invalid quality for IReal Pro");
-                    }
-
-                    if (chord.hasBass()) {
-                        iRealChord.append("/").append(chord.bass());
-                    }
-
-                    builder.append(iRealChord);
-                    lastChord = iRealChord.toString();
+                    String iRealChord = buildChord(chord);
+                    builder.append(iRealChord).append(" ");
+                    lastChord = iRealChord;
                     lastMeasure = measure;
-                    builder.append(" ");
                 }
+                count++;
             }
         }
         builder.append("Z");
         return builder.toString();
+    }
+
+    private String buildTimeSignature(Measure measure) {
+        if (measure.hasTime()) {
+            // if the key signature doesn't exist in IReal Pro, throw an exception
+            if (!time.containsKey(measure.getTime().toString())) {
+                throw new RuntimeException("This time signature is invalid for IReal Pro");
+            }
+            return time.getProperty(measure.getTime().toString());
+        }
+        return "";
+    }
+
+    private String buildEmptyMeasure(Measure measure, Measure lastMeasure, String lastChord) {
+        if (lastMeasure != null && lastMeasure.getChords().size() == 1) {
+            // repeat last measure if this measure has no chords and last measure with a chord only had one chord
+            return "x ";
+        } else if (lastChord == null) {
+            // play no chord if this is the first measure
+            return "n ";
+        } else {
+            // repeat only the last chord if the previous measure with a chord had multiple chords
+            return lastChord + " ";
+        }
+    }
+
+    private String buildChord(Chord chord) {
+        StringBuilder iRealChord = new StringBuilder();
+        iRealChord.append(chord.root());
+
+        StringBuilder quality = new StringBuilder();
+        quality.append(chords.getProperty(chord.kind()));
+        for (String alteration : chord.alterations()) {
+            quality.append(alteration);
+        }
+
+        if (qualityIsValid(quality.toString())) {
+            iRealChord.append(quality);
+        } else {
+            throw new RuntimeException(quality + "is an invalid quality for IReal Pro");
+        }
+
+        if (chord.hasBass()) {
+            iRealChord.append("/").append(chord.bass());
+        }
+        return iRealChord.toString();
     }
 
     /**

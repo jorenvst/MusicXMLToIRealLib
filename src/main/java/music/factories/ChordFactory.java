@@ -1,6 +1,6 @@
-package converter.music.factories;
+package music.factories;
 
-import converter.music.Chord;
+import music.Chord;
 import org.jdom2.Element;
 
 import java.io.IOException;

@@ -1,4 +1,4 @@
-package converter.music;
+package music;
 
 import java.util.List;
 

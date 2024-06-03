@@ -1,8 +1,8 @@
-package converter.musicxml;
+package musicxml;
 
-import converter.music.Measure;
-import converter.music.Song;
-import converter.music.factories.MeasureFactory;
+import music.Measure;
+import music.factories.MeasureFactory;
+import music.Song;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -36,13 +36,13 @@ public class MusicXMLReader {
 
     /**
      * read parts from a partwise musicxml file
-     * @param path the path to the musicxml file
+     * @param file the musicxml file
      * @return a list of Song objects
      */
-    public List<Song> readSongs(String path) {
+    public List<Song> readSongs(File file) {
 
         List<Song> songs = new ArrayList<>();
-        Element root = getRoot(path);
+        Element root = getRoot(file);
 
         for (Element part : root.getChildren("part")) {
             Song song = readSongPart(part, root);
@@ -56,11 +56,11 @@ public class MusicXMLReader {
 
     /**
      * read a part of the song by index
-     * @param path the path to the musicxml file
+     * @param file the musicxml file
      * @param partNum the index of the part that needs to be read out
      */
-    public Song readSongPart(String path, int partNum) {
-        Element root = getRoot(path);
+    public Song readSongPart(File file, int partNum) {
+        Element root = getRoot(file);
         Element part = root.getChildren("part").get(partNum);
         return readSongPart(part, root);
     }
@@ -74,12 +74,12 @@ public class MusicXMLReader {
     /**
      * get root element of musicxml
      */
-    private Element getRoot(String path) {
+    private Element getRoot(File file) {
         try {
             SAXBuilder builder = new SAXBuilder();
             // ignore deprecated dtd
             builder.setEntityResolver(new IgnoreDTDEntityResolver());
-            Document musicDoc = builder.build(new File(path));
+            Document musicDoc = builder.build(file);
             return musicDoc.getRootElement();
         } catch (IOException | JDOMException e) {
             throw new RuntimeException("Could not parse the musicxml file", e);

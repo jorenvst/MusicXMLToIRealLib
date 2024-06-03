@@ -1,6 +1,6 @@
-package converter.music;
+package music;
 
-import converter.musicxml.Repetition;
+import musicxml.Repetition;
 
 import java.util.ArrayList;
 import java.util.Collection;
