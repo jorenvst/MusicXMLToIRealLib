@@ -11,4 +11,12 @@ public record Time(int beats, int beatType) {
     public String toString() {
         return beats + "/" + beatType;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof Time time)) {
+            return false;
+        }
+        return time.beats() == this.beats && time.beatType() == this.beatType;
+    }
 }

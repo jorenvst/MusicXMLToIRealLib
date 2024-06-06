@@ -1,6 +1,7 @@
 package musicxml;
 
 import music.Measure;
+import music.Time;
 import music.factories.MeasureFactory;
 import music.Song;
 import org.jdom2.Document;
@@ -67,7 +68,18 @@ public class MusicXMLReader {
 
     private Song readSongPart(Element part, Element root) {
         String key = keys.getProperty(part.getChild("measure").getChild("attributes").getChild("key").getChildText("fifths"));
-        List<Measure> measures = part.getChildren("measure").stream().map(MeasureFactory::buildMeasure).toList();
+        Time time = null;
+        List<Measure> measures = new ArrayList<>();
+        for (Element measure : part.getChildren("measure")) {
+            if (measure.getChild("attributes") != null && measure.getChild("attributes").getChild("time") != null) {
+                time = new Time(
+                        Integer.parseInt(measure.getChild("attributes").getChild("time").getChildText("beats")),
+                        Integer.parseInt(measure.getChild("attributes").getChild("time").getChildText("beat-type"))
+                );
+            }
+            measures.add(MeasureFactory.buildMeasure(measure, time));
+        }
+
         return new Song(getTitle(root), getComposer(root), key, measures);
     }
 
@@ -82,7 +94,7 @@ public class MusicXMLReader {
             Document musicDoc = builder.build(file);
             return musicDoc.getRootElement();
         } catch (IOException | JDOMException e) {
-            throw new RuntimeException("Could not parse the musicxml file", e);
+            throw new RuntimeException("Could not get or parse the musicxml file", e);
         }
     }
 

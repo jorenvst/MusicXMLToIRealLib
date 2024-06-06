@@ -13,6 +13,7 @@ import java.util.List;
 public class Measure {
 
     private final List<Chord> chords;
+    private final List<Note> notes;
     private final Time time;
     private final String barLineType;
     private final boolean implicit;
@@ -25,8 +26,9 @@ public class Measure {
      * @param implicit      don't use this measure for conversion if implicit is true
      * @param repetition    type of repetition for this bar line, e.g. none, right, left
      */
-    public Measure(Collection<Chord> chords, Time time, String barLineType, boolean implicit, Repetition repetition) {
+    public Measure(Collection<Chord> chords, Collection<Note> notes, Time time, String barLineType, boolean implicit, Repetition repetition) {
         this.chords = new ArrayList<>(chords);
+        this.notes = new ArrayList<>(notes);
         this.time = time;
         if (repetition == Repetition.NONE) {
             this.barLineType = barLineType;
@@ -39,6 +41,10 @@ public class Measure {
 
     public List<Chord> getChords() {
         return chords;
+    }
+
+    public List<Note> getNotes() {
+        return notes;
     }
 
     public String getBarLineType() {

@@ -15,10 +15,9 @@ public class MeasureFactory {
      * @param measure the element that needs to be converted into a Measure
      * @return a new Measure
      */
-    public static Measure buildMeasure(Element measure) {
+    public static Measure buildMeasure(Element measure, Time time) {
         String barLineType = "regular";
         Repetition repetition = Repetition.NONE;
-        Time time = null;
 
         if (measure.getChild("barline") != null) {
             barLineType = measure.getChild("barline").getChildText("bar-style");
@@ -27,15 +26,9 @@ public class MeasureFactory {
             }
         }
 
-        if (measure.getChild("attributes") != null && measure.getChild("attributes").getChild("time") != null) {
-            time = new Time(
-                    Integer.parseInt(measure.getChild("attributes").getChild("time").getChildText("beats")),
-                    Integer.parseInt(measure.getChild("attributes").getChild("time").getChildText("beat-type"))
-            );
-        }
-
         return new Measure(
                 measure.getChildren("harmony").stream().map(ChordFactory::buildChord).toList(),
+                measure.getChildren("note").stream().map(NoteFactory::buildNote).toList(),
                 time,
                 barLineType,
                 measure.getAttributeValue("implicit") != null && measure.getAttributeValue("implicit").equals("yes"),

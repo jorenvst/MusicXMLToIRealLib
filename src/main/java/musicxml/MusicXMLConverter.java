@@ -1,9 +1,7 @@
 package musicxml;
 
-import music.Measure;
+import music.*;
 import ireal.IRealProDocument;
-import music.Chord;
-import music.Song;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -110,42 +108,45 @@ public class MusicXMLConverter {
 
         String lastChord = null;
         Measure lastMeasure = null;
-        int count = 0;
+        Time lastTime = null;
+
         for (Measure measure : measures) {
-            builder.append(buildTimeSignature(measure));
+            builder.append(buildTimeSignature(measure, lastTime));
             // only include the measure if it is not implicit
             if (!measure.isImplicit()) {
-                // append bar line
                 builder.append(barLines.getProperty(measure.getBarLineType() + barLineMap.get(measure.getRepetition())));
-                if (count == 4) {
-                    builder.append("Y");
-                    count = 0;
-                }
 
                 if (measure.getChords().isEmpty()) {
                     builder.append(buildEmptyMeasure(measure, lastMeasure, lastChord));
-                }
+                } else {
 
-                // put each chord into the IReal Pro song builder
-                for (Chord chord : measure.getChords()) {
-                    String iRealChord = buildChord(chord);
-                    builder.append(iRealChord).append(" ");
-                    lastChord = iRealChord;
-                    lastMeasure = measure;
+                    List<String> measureList = new ArrayList<>(List.of(" ", " ", " ", " "));
+
+                    // put each chord into the IReal Pro song builder
+                    for (int i = 0; i < measure.getChords().size(); i++) {
+                        Chord chord = measure.getChords().get(i);
+
+                        String iRealChord = buildChord(chord);
+                        measureList.set(calculatePos(i), iRealChord);
+
+                        lastChord = iRealChord;
+                        lastMeasure = measure;
+                    }
+                    builder.append(String.join("", measureList));
                 }
-                count++;
             }
         }
         builder.append("Z");
         return builder.toString();
     }
 
-    private String buildTimeSignature(Measure measure) {
-        if (measure.hasTime()) {
+    private String buildTimeSignature(Measure measure, Time previousTime) {
+        if (measure.hasTime() && !measure.getTime().equals(previousTime)) {
             // if the key signature doesn't exist in IReal Pro, throw an exception
             if (!time.containsKey(measure.getTime().toString())) {
                 throw new RuntimeException("This time signature is invalid for IReal Pro");
             }
+            previousTime = measure.getTime();
             return time.getProperty(measure.getTime().toString());
         }
         return "";
@@ -154,13 +155,13 @@ public class MusicXMLConverter {
     private String buildEmptyMeasure(Measure measure, Measure lastMeasure, String lastChord) {
         if (lastMeasure != null && lastMeasure.getChords().size() == 1) {
             // repeat last measure if this measure has no chords and last measure with a chord only had one chord
-            return "x ";
+            return " x  ";
         } else if (lastChord == null) {
             // play no chord if this is the first measure
-            return "n ";
+            return "n   ";
         } else {
             // repeat only the last chord if the previous measure with a chord had multiple chords
-            return lastChord + " ";
+            return lastChord + "   ";
         }
     }
 
@@ -174,16 +175,26 @@ public class MusicXMLConverter {
             quality.append(alteration);
         }
 
-        if (qualityIsValid(quality.toString())) {
-            iRealChord.append(quality);
+        String qualityString = quality.toString();
+
+        if (chords.containsKey(qualityString)) {
+            qualityString = chords.getProperty(qualityString);
+        }
+
+        if (qualityIsValid(qualityString)) {
+            iRealChord.append(qualityString);
         } else {
-            throw new RuntimeException(quality + "is an invalid quality for IReal Pro");
+            throw new RuntimeException(quality + " is an invalid quality for IReal Pro");
         }
 
         if (chord.hasBass()) {
             iRealChord.append("/").append(chord.bass());
         }
         return iRealChord.toString();
+    }
+
+    public int calculatePos(int x) {
+        return (int)Math.floor(Math.pow(x, 3) + -4.5 * Math.pow(x, 2) + 5.5 * x);
     }
 
     /**
