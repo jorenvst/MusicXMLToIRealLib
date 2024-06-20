@@ -2,6 +2,8 @@ package musicxml;
 
 import music.*;
 import ireal.IRealProDocument;
+import musicxml.placement.ChordPlacer;
+import musicxml.placement.DefaultChordPlacer;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -14,27 +16,31 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * MusicXMLConverter --- class for converting a song to an IReal Pro document
+ * PartwiseMusicXMLConverter --- class for converting a song to an IReal Pro document
  */
-public class MusicXMLConverter {
+public class PartwiseMusicXMLConverter {
 
-    private final MusicXMLReader reader = new MusicXMLReader();
+    private final PartwiseMusicXMLReader reader = new PartwiseMusicXMLReader();
     private final Set<String> validQualities;
     private final Properties time;
     private final Properties chords;
     private final Properties barLines;
 
+    private Time previousTime = null;
+
+    private ChordPlacer placer;
     private final Map<Repetition, String> barLineMap;
 
-    public MusicXMLConverter() {
+    public PartwiseMusicXMLConverter() {
+        this.placer = new DefaultChordPlacer();
         // load properties upon creation
         try (
-                InputStream in1 = MusicXMLConverter.class.getResourceAsStream("/time.properties");        // for translating time signatures
-                InputStream in2 = MusicXMLConverter.class.getResourceAsStream("/chords.properties");      // for translating chords
-                InputStream in3 = MusicXMLConverter.class.getResourceAsStream("/bar-lines.properties")    // for translating bar lines
+                InputStream in1 = PartwiseMusicXMLConverter.class.getResourceAsStream("/time.properties");        // for translating time signatures
+                InputStream in2 = PartwiseMusicXMLConverter.class.getResourceAsStream("/chords.properties");      // for translating chords
+                InputStream in3 = PartwiseMusicXMLConverter.class.getResourceAsStream("/bar-lines.properties")    // for translating bar lines
         ) {
             // valid-alterations contains a list with all IReal Pro valid chord extensions/alterations
-            Document document = new SAXBuilder().build(MusicXMLConverter.class.getResourceAsStream("/valid-alterations.xml"));
+            Document document = new SAXBuilder().build(PartwiseMusicXMLConverter.class.getResourceAsStream("/valid-alterations.xml"));
             validQualities = document.getRootElement().getChildren("element")
                     .stream().map(Element::getText).collect(Collectors.toSet());
 
@@ -56,6 +62,12 @@ public class MusicXMLConverter {
         barLineMap.put(Repetition.NONE, "");
         barLineMap.put(Repetition.FORWARD, "-forward");
         barLineMap.put(Repetition.BACKWARD, "-backward");
+    }
+
+    public void setChordPlacer(ChordPlacer placer) {
+        if (placer != null) {
+            this.placer = placer;
+        }
     }
 
     /**
@@ -108,31 +120,39 @@ public class MusicXMLConverter {
 
         String lastChord = null;
         Measure lastMeasure = null;
-        Time lastTime = null;
 
         for (Measure measure : measures) {
-            builder.append(buildTimeSignature(measure, lastTime));
+            builder.append(buildTimeSignature(measure));
             // only include the measure if it is not implicit
-            if (!measure.isImplicit()) {
+            if (!measure.isImplicit() && measure.isFull()) {
                 builder.append(barLines.getProperty(measure.getBarLineType() + barLineMap.get(measure.getRepetition())));
 
                 if (measure.getChords().isEmpty()) {
                     builder.append(buildEmptyMeasure(measure, lastMeasure, lastChord));
                 } else {
 
-                    List<String> measureList = new ArrayList<>(List.of(" ", " ", " ", " "));
+                    List<String> measureList = new ArrayList<>(List.of("", "", "", ""));
 
                     // put each chord into the IReal Pro song builder
-                    for (int i = 0; i < measure.getChords().size(); i++) {
-                        Chord chord = measure.getChords().get(i);
-
-                        String iRealChord = buildChord(chord);
-                        measureList.set(calculatePos(i), iRealChord);
+                    for (Map.Entry<Integer, Chord> entry : placer.placeChords(measure).entrySet()) {
+                        String iRealChord = buildChord(entry.getValue());
+                        measureList.set(entry.getKey(), iRealChord);
 
                         lastChord = iRealChord;
                         lastMeasure = measure;
                     }
-                    builder.append(String.join("", measureList));
+                    builder.append(String.join(" ", measureList));
+
+//                    for (int i = 0; i < measure.getChords().size(); i++) {
+//                        Chord chord = measure.getChords().get(i);
+//
+//                        String iRealChord = buildChord(chord);
+//                        measureList.set(calculatePos(i), iRealChord);
+//
+//                        lastChord = iRealChord;
+//                        lastMeasure = measure;
+//                    }
+//                    builder.append(String.join("", measureList));
                 }
             }
         }
@@ -140,7 +160,7 @@ public class MusicXMLConverter {
         return builder.toString();
     }
 
-    private String buildTimeSignature(Measure measure, Time previousTime) {
+    private String buildTimeSignature(Measure measure) {
         if (measure.hasTime() && !measure.getTime().equals(previousTime)) {
             // if the key signature doesn't exist in IReal Pro, throw an exception
             if (!time.containsKey(measure.getTime().toString())) {

@@ -15,7 +15,7 @@ public class MeasureFactory {
      * @param measure the element that needs to be converted into a Measure
      * @return a new Measure
      */
-    public static Measure buildMeasure(Element measure, Time time) {
+    public static Measure buildMeasure(Element measure, Time time, int division) {
         String barLineType = "regular";
         Repetition repetition = Repetition.NONE;
 
@@ -32,7 +32,8 @@ public class MeasureFactory {
                 time,
                 barLineType,
                 measure.getAttributeValue("implicit") != null && measure.getAttributeValue("implicit").equals("yes"),
-                repetition
+                repetition,
+                division
         );
     }
 }

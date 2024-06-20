@@ -18,6 +18,7 @@ public class Measure {
     private final String barLineType;
     private final boolean implicit;
     private final Repetition repetition;
+    private final int divisions;
 
     /**
      * @param chords        chords in this measure
@@ -26,7 +27,7 @@ public class Measure {
      * @param implicit      don't use this measure for conversion if implicit is true
      * @param repetition    type of repetition for this bar line, e.g. none, right, left
      */
-    public Measure(Collection<Chord> chords, Collection<Note> notes, Time time, String barLineType, boolean implicit, Repetition repetition) {
+    public Measure(Collection<Chord> chords, Collection<Note> notes, Time time, String barLineType, boolean implicit, Repetition repetition, int divisions) {
         this.chords = new ArrayList<>(chords);
         this.notes = new ArrayList<>(notes);
         this.time = time;
@@ -37,6 +38,7 @@ public class Measure {
         }
         this.implicit = implicit;
         this.repetition = repetition;
+        this.divisions = divisions;
     }
 
     public List<Chord> getChords() {
@@ -68,6 +70,10 @@ public class Measure {
 
     public boolean isImplicit() {
         return implicit;
+    }
+
+    public boolean isFull() {
+        return notes.stream().mapToInt(Note::duration).sum() == time.beats() * divisions;
     }
 
     @Override

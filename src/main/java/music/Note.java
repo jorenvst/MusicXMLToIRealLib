@@ -1,14 +1,5 @@
 package music;
 
-public class Note {
+public record Note(int duration, boolean rest) {
 
-    private final int duration;
-
-    public Note(int duration) {
-        this.duration = duration;
-    }
-
-    public int getDuration() {
-        return duration;
-    }
 }

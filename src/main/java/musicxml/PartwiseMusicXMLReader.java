@@ -4,6 +4,7 @@ import music.Measure;
 import music.Time;
 import music.factories.MeasureFactory;
 import music.Song;
+import musicxml.placement.ChordPlacer;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -20,14 +21,14 @@ import java.util.List;
 import java.util.Properties;
 
 /**
- * MusicXMLReader --- class for reading musicxml files and convert them to the Song class
+ * PartwiseMusicXMLReader --- class for reading musicxml files and convert them to the Song class
  */
-public class MusicXMLReader {
+public class PartwiseMusicXMLReader {
 
     private final Properties keys;
 
-    public MusicXMLReader() {
-        try (InputStream in = MusicXMLReader.class.getResourceAsStream("/keys.properties")) {
+    public PartwiseMusicXMLReader() {
+        try (InputStream in = PartwiseMusicXMLReader.class.getResourceAsStream("/keys.properties")) {
             keys = new Properties();
             keys.load(in);
         } catch (IOException e) {
@@ -69,6 +70,7 @@ public class MusicXMLReader {
     private Song readSongPart(Element part, Element root) {
         String key = keys.getProperty(part.getChild("measure").getChild("attributes").getChild("key").getChildText("fifths"));
         Time time = null;
+        int duration = 1;
         List<Measure> measures = new ArrayList<>();
         for (Element measure : part.getChildren("measure")) {
             if (measure.getChild("attributes") != null && measure.getChild("attributes").getChild("time") != null) {
@@ -77,7 +79,12 @@ public class MusicXMLReader {
                         Integer.parseInt(measure.getChild("attributes").getChild("time").getChildText("beat-type"))
                 );
             }
-            measures.add(MeasureFactory.buildMeasure(measure, time));
+
+            if (measure.getChild("attributes") != null && measure.getChild("attributes").getChild("divisions") != null) {
+                duration = Integer.parseInt(measure.getChild("attributes").getChildText("divisions"));
+            }
+
+            measures.add(MeasureFactory.buildMeasure(measure, time, duration));
         }
 
         return new Song(getTitle(root), getComposer(root), key, measures);
