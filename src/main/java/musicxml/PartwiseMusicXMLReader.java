@@ -1,130 +1,85 @@
 package musicxml;
 
+import music.Harmony;
 import music.Measure;
+import music.Part;
 import music.Time;
-import music.factories.MeasureFactory;
-import music.Song;
-import musicxml.placement.ChordPlacer;
-import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
-import org.xml.sax.EntityResolver;
-import org.xml.sax.InputSource;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
-/**
- * PartwiseMusicXMLReader --- class for reading musicxml files and convert them to the Song class
- */
 public class PartwiseMusicXMLReader {
 
-    private final Properties keys;
+    private final Properties timeProperties = new Properties();
+    private final Properties chordProperties = new Properties();
 
     public PartwiseMusicXMLReader() {
-        try (InputStream in = PartwiseMusicXMLReader.class.getResourceAsStream("/keys.properties")) {
-            keys = new Properties();
-            keys.load(in);
+        try {
+            timeProperties.load(PartwiseMusicXMLReader.class.getResourceAsStream("time.properties"));
+            chordProperties.load(PartwiseMusicXMLReader.class.getResourceAsStream("chords.properties"));
         } catch (IOException e) {
-            throw new RuntimeException("Could not read keys.properties", e);
+            throw new RuntimeException("could not read properties", e);
         }
     }
 
-    /**
-     * read parts from a partwise musicxml file
-     * @param file the musicxml file
-     * @return a list of Song objects
-     */
-    public List<Song> readSongs(File file) {
-
-        List<Song> songs = new ArrayList<>();
-        Element root = getRoot(file);
-
-        for (Element part : root.getChildren("part")) {
-            Song song = readSongPart(part, root);
-            // only add the song if it has harmony
-            if (song.getMeasures().stream().anyMatch(measure -> !measure.getChords().isEmpty())) {
-                songs.add(song);
-            }
-        }
-        return songs;
-    }
-
-    /**
-     * read a part of the song by index
-     * @param file the musicxml file
-     * @param partNum the index of the part that needs to be read out
-     */
-    public Song readSongPart(File file, int partNum) {
-        Element root = getRoot(file);
-        Element part = root.getChildren("part").get(partNum);
-        return readSongPart(part, root);
-    }
-
-    private Song readSongPart(Element part, Element root) {
-        String key = keys.getProperty(part.getChild("measure").getChild("attributes").getChild("key").getChildText("fifths"));
-        Time time = null;
-        int duration = 1;
-        List<Measure> measures = new ArrayList<>();
-        for (Element measure : part.getChildren("measure")) {
-            if (measure.getChild("attributes") != null && measure.getChild("attributes").getChild("time") != null) {
-                time = new Time(
-                        Integer.parseInt(measure.getChild("attributes").getChild("time").getChildText("beats")),
-                        Integer.parseInt(measure.getChild("attributes").getChild("time").getChildText("beat-type"))
-                );
-            }
-
-            if (measure.getChild("attributes") != null && measure.getChild("attributes").getChild("divisions") != null) {
-                duration = Integer.parseInt(measure.getChild("attributes").getChildText("divisions"));
-            }
-
-            measures.add(MeasureFactory.buildMeasure(measure, time, duration));
-        }
-
-        return new Song(getTitle(root), getComposer(root), key, measures);
-    }
-
-    /**
-     * get root element of musicxml
-     */
-    private Element getRoot(File file) {
+    public Collection<Part> readParts(String path) {
         try {
             SAXBuilder builder = new SAXBuilder();
-            // ignore deprecated dtd
             builder.setEntityResolver(new IgnoreDTDEntityResolver());
-            Document musicDoc = builder.build(file);
-            return musicDoc.getRootElement();
+            return builder.build(path).getRootElement().getChildren("part").stream()
+                    .map(this::readPart).collect(Collectors.toSet());
         } catch (IOException | JDOMException e) {
-            throw new RuntimeException("Could not get or parse the musicxml file", e);
+            throw new RuntimeException("could not read " + path, e);
         }
     }
 
-    private String getTitle(Element root) {
-        return root.getChild("work").getChildText("work-title");
-    }
-
-    private String getComposer(Element root) {
-        return root.getChild("identification").getChildText("creator");
-    }
-
-    /**
-     * IgnoreDTDEntityResolver --- class to ignore deprecated links for dtd
-     * e.g. when exporting a musescore file to musicxml, the included dtd is nonexistent and deprecated
-     */
-    static class IgnoreDTDEntityResolver implements EntityResolver {
-        @Override
-        public InputSource resolveEntity(String publicId, String systemId) {
-            if (systemId.contains("partwise.dtd")) {
-                return new InputSource(new StringReader(""));
-            } else {
-                return null;
+    private Part readPart(Element musicXmlPart) {
+        int divisions = 1;
+        Time time = Time.T44;
+        Part part = new Part();
+        for (Element measureElement : musicXmlPart.getChildren("measure")) {
+            Element divisionsElement = getChild(measureElement, "attributes", "divisions");
+            if (divisionsElement != null) {
+                divisions = Integer.parseInt(divisionsElement.getText());
             }
+
+            Element timeElement = getChild(measureElement, "attributes", "time");
+            if (timeElement != null) {
+                String timeString = timeElement.getChildText("beats") + "/" + timeElement.getChildText("beat-type");
+                if (timeProperties.containsKey(timeString)) {
+                    time = Time.valueOf(timeProperties.getProperty(timeString));
+                }
+            }
+
+            Measure measure = new Measure(time);
+            for (Element harmony : measureElement.getChildren("harmony")) {
+                String root = getChild(harmony, "root", "root-step").getText();
+                Element rootAlter = getChild(harmony, "root", "root-alter");
+                if (rootAlter != null) {
+                    root += chordProperties.getProperty(rootAlter.getText());
+                }
+
+                String kind = chordProperties.getProperty(harmony.getChildText("kind"));
+
+                measure.addHarmony(new Harmony(root, kind));
+            }
+            part.addMeasure(measure);
         }
+        return part;
+    }
+
+    private Element getChild(Element element, String... children) {
+        return getChild(element, 0, children);
+    }
+
+    private Element getChild(Element element, int index, String... children) {
+        if (element == null) return null;
+        if (children.length == index) return element;
+        return getChild(element.getChild(children[index]), index + 1, children);
     }
 }
