@@ -142,17 +142,6 @@ public class PartwiseMusicXMLConverter {
                         lastMeasure = measure;
                     }
                     builder.append(String.join(" ", measureList));
-
-//                    for (int i = 0; i < measure.getChords().size(); i++) {
-//                        Chord chord = measure.getChords().get(i);
-//
-//                        String iRealChord = buildChord(chord);
-//                        measureList.set(calculatePos(i), iRealChord);
-//
-//                        lastChord = iRealChord;
-//                        lastMeasure = measure;
-//                    }
-//                    builder.append(String.join("", measureList));
                 }
             }
         }
