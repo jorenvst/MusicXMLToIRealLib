@@ -1,4 +1,4 @@
-package musicxml;
+package util;
 
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;

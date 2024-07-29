@@ -36,6 +36,6 @@ public class Part {
 
     @Override
     public String toString() {
-        return measures.toString();
+        return String.join("\n", measures.stream().map(Measure::toString).toList());
     }
 }

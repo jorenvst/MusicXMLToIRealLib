@@ -1,5 +1,72 @@
 package music;
 
 public enum Time {
-    T44, T34, T24, T54, T64, T74, T22, T32, T58, T68, T75, T98, T12
+    T44 {
+        @Override
+        public int getBeats() {
+            return 4;
+        }
+    }, T34 {
+        @Override
+        public int getBeats() {
+            return 3;
+        }
+    }, T24 {
+        @Override
+        public int getBeats() {
+            return 2;
+        }
+    }, T54 {
+        @Override
+        public int getBeats() {
+            return 5;
+        }
+    }, T64 {
+        @Override
+        public int getBeats() {
+            return 6;
+        }
+    }, T74 {
+        @Override
+        public int getBeats() {
+            return 7;
+        }
+    }, T22 {
+        @Override
+        public int getBeats() {
+            return 2;
+        }
+    }, T32 {
+        @Override
+        public int getBeats() {
+            return 3;
+        }
+    }, T58 {
+        @Override
+        public int getBeats() {
+            return 5;
+        }
+    }, T68 {
+        @Override
+        public int getBeats() {
+            return 6;
+        }
+    }, T75 {
+        @Override
+        public int getBeats() {
+            return 7;
+        }
+    }, T98 {
+        @Override
+        public int getBeats() {
+            return 9;
+        }
+    }, T12 {
+        @Override
+        public int getBeats() {
+            return 12;
+        }
+    };
+
+    public abstract int getBeats();
 }

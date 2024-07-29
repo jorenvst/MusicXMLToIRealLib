@@ -7,8 +7,8 @@ public class Harmony {
     private final String bass;
     private final int offset;
 
-    public Harmony(String root, String kind) {
-        this(root, kind, "", 0);
+    public Harmony(String root, String kind, int offset) {
+        this(root, kind, "", offset);
     }
 
     public Harmony(String root, String kind, String bass, int offset) {
@@ -21,7 +21,7 @@ public class Harmony {
     @Override
     public String toString() {
         if (bass.isEmpty()) {
-            return root + kind;
+            return root + kind + ":" + offset;
         } else {
             return root + kind + "/" + bass;
         }
