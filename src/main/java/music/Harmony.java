@@ -18,6 +18,22 @@ public class Harmony {
         this.offset = offset;
     }
 
+    public String getRoot() {
+        return root;
+    }
+
+    public String getKind() {
+        return kind;
+    }
+
+    public String getBass() {
+        return bass;
+    }
+
+    public int getOffset() {
+        return offset;
+    }
+
     @Override
     public String toString() {
         if (bass.isEmpty()) {

@@ -7,15 +7,20 @@ public class Part {
 
     private final List<Measure> measures;
     private int divisions;
+    private String key;
 
     public Part() {
         measures = new ArrayList<>();
         divisions = 1;
     }
 
-    public Part(List<Measure> measures, int divisions) {
-        this.measures = measures;
-        this.divisions = divisions;
+    public Part setKey(String key) {
+        this.key = key;
+        return this;
+    }
+
+    public String getKey() {
+        return key;
     }
 
     public List<Measure> getMeasures() {

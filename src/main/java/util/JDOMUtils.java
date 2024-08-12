@@ -2,7 +2,7 @@ package util;
 
 import org.jdom2.Element;
 
-public class JdomUtils {
+public class JDOMUtils {
 
     public static String getChildTextIfExists(Element element, String... children) {
         Element child = getChildIfExists(element, children);
