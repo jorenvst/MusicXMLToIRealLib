@@ -1,5 +1,6 @@
 package music;
 
+// TODO: move to properties?
 public enum Time {
     T44 {
         @Override

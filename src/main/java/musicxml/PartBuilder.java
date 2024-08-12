@@ -14,6 +14,7 @@ public class PartBuilder {
     private final PropertiesSupplier supplier;
 
     private int divisions = 1;
+    private int offset = 0;
     private Time time = Time.T44;
 
     public PartBuilder(Element musicXmlPart) {
@@ -28,8 +29,15 @@ public class PartBuilder {
             setTime(measureElement);
 
             Measure measure = new Measure(time, divisions);
-            for (Element harmonyElement : measureElement.getChildren("harmony")) {
-                measure.addHarmony(getHarmony(harmonyElement));
+            offset = 0;
+            for (Element e : measureElement.getChildren()) {
+                if (e.getName().equals("harmony")) {
+                    measure.addHarmony(getHarmony(e));
+                }
+                if (e.getName().equals("note")) {
+                    String durationString = JdomUtils.getChildTextIfExists(e, "duration");
+                    if (durationString != null) offset += Integer.parseInt(durationString);
+                }
             }
             part.addMeasure(measure);
         }
@@ -62,7 +70,6 @@ public class PartBuilder {
 
         String kind = supplier.getChordProperty(harmonyElement.getChildText("kind"));
 
-        int offset = 0;
         String offsetString = JdomUtils.getChildTextIfExists(harmonyElement, "offset");
         if (offsetString != null) {
             offset = Integer.parseInt(offsetString);
