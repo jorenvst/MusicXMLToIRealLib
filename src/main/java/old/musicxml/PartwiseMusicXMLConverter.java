@@ -1,13 +1,13 @@
-package musicxml;
+package old.musicxml;
 
-import irealpro.Chart;
-import music.Composer;
-import music.Song;
+import old.irealpro.Chart;
+import old.music.Composer;
+import old.music.Song;
+import old.util.IgnoreDTDEntityResolver;
+import old.util.JDOMUtils;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
-import util.IgnoreDTDEntityResolver;
-import util.JDOMUtils;
 
 import java.io.IOException;
 import java.util.Collection;

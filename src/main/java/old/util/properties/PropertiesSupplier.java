@@ -1,6 +1,6 @@
-package util.properties;
+package old.util.properties;
 
-import musicxml.PartwiseMusicXMLConverter;
+import old.musicxml.PartwiseMusicXMLConverter;
 
 import java.io.IOException;
 import java.util.HashMap;

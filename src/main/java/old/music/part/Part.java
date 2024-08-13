@@ -1,6 +1,6 @@
-package music.part;
+package old.music.part;
 
-import music.part.measure.Measure;
+import old.music.part.measure.Measure;
 
 import java.util.ArrayList;
 import java.util.List;

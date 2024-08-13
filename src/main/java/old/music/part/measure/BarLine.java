@@ -1,4 +1,4 @@
-package music.part.measure;
+package old.music.part.measure;
 
 /**
  * each constant represents a type of barline

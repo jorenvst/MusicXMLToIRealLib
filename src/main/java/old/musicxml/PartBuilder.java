@@ -1,14 +1,14 @@
-package musicxml;
+package old.musicxml;
 
-import music.part.measure.Measure;
-import music.part.Part;
-import music.part.measure.BarLine;
-import music.part.measure.Harmony;
-import music.part.measure.Time;
+import old.music.part.measure.Measure;
+import old.music.part.Part;
+import old.music.part.measure.BarLine;
+import old.music.part.measure.Harmony;
+import old.music.part.measure.Time;
+import old.util.properties.PropertiesType;
 import org.jdom2.Element;
-import util.JDOMUtils;
-import util.properties.PropertiesSupplier;
-import util.properties.PropertiesType;
+import old.util.JDOMUtils;
+import old.util.properties.PropertiesSupplier;
 
 import java.util.List;
 

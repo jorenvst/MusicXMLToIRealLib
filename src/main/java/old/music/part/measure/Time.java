@@ -1,4 +1,4 @@
-package music.part.measure;
+package old.music.part.measure;
 
 /**
  * contains all the possible time signatures with the amount of beats in a measure

@@ -1,12 +1,11 @@
-package irealpro;
+package old.irealpro;
 
-import music.Song;
-import music.part.Part;
-import music.part.measure.BarLine;
-import music.part.measure.BarLine.BarLinePosition;
-import music.part.measure.Harmony;
-import music.part.measure.Measure;
-import music.part.measure.Time;
+import old.music.Song;
+import old.music.part.Part;
+import old.music.part.measure.BarLine;
+import old.music.part.measure.Harmony;
+import old.music.part.measure.Measure;
+import old.music.part.measure.Time;
 
 import java.io.File;
 import java.io.IOException;
@@ -138,7 +137,7 @@ public class Chart {
             }
             time = measure.getTime();
 
-            builder.append(measure.getStartBarLine().symbol(BarLinePosition.START));
+            builder.append(measure.getStartBarLine().symbol(BarLine.BarLinePosition.START));
 
             // if a measure has no harmony, repeat the previous chord
             if (measure.getHarmony().isEmpty()) {
@@ -153,7 +152,7 @@ public class Chart {
 
             // append special bar line at the end if it is not regular
             if (measure.getEndBarLine() != BarLine.REGULAR) {
-                builder.append(measure.getEndBarLine().symbol(BarLinePosition.END));
+                builder.append(measure.getEndBarLine().symbol(BarLine.BarLinePosition.END));
             }
         }
         return builder.toString();
