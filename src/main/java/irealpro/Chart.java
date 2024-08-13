@@ -58,6 +58,14 @@ public class Chart {
     }
 
     /**
+     * @return the body of the html tag in IReal Pro file format
+     */
+    @Override
+    public String toString() {
+        return buildMetaData() + buildBody();
+    }
+
+    /**
      * write the chart to a file
      * @param fileName the filename to write to
      */
@@ -85,14 +93,6 @@ public class Chart {
         } else {
             System.out.println("file already exists: " + export.getAbsolutePath());
         }
-    }
-
-    /**
-     * @return the body of the html tag in IReal Pro file format
-     */
-    @Override
-    public String toString() {
-        return buildMetaData() + buildBody();
     }
 
     /**
