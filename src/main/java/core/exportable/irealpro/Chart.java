@@ -1,6 +1,6 @@
-package exportable.irealpro;
+package core.exportable.irealpro;
 
-import exportable.Exportable;
+import core.exportable.Exportable;
 import music.Composer;
 
 public class Chart implements Exportable {

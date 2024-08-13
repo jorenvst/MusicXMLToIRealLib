@@ -1,7 +1,7 @@
-package converter.irealpro;
+package core.converter.irealpro;
 
-import converter.SongConverter;
-import exportable.irealpro.Chart;
+import core.converter.SongConverter;
+import core.exportable.irealpro.Chart;
 import music.*;
 
 import java.io.IOException;

@@ -1,4 +1,4 @@
-package exportable;
+package core.exportable;
 
 public interface Exportable {
 

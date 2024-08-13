@@ -1,6 +1,6 @@
-package converter;
+package core.converter;
 
-import exportable.Exportable;
+import core.exportable.Exportable;
 import music.Song;
 
 public interface SongConverter {

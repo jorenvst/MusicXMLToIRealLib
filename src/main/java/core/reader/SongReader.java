@@ -1,6 +1,6 @@
-package reader;
+package core.reader;
 
-import old.music.Song;
+import music.Song;
 
 import java.io.File;
 
