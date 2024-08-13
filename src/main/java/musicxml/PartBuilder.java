@@ -1,12 +1,11 @@
 package musicxml;
 
-import music.Harmony;
-import music.Measure;
-import music.Part;
-import music.Time;
+import music.*;
 import org.jdom2.Element;
 import util.JDOMUtils;
 import util.PropertiesSupplier;
+
+import java.util.List;
 
 public class PartBuilder {
 
@@ -32,9 +31,32 @@ public class PartBuilder {
             setTime(measureElement);
 
             String implicitString = measureElement.getAttributeValue("implicit");
-            Measure measure = new Measure(time, divisions, implicitString != null && implicitString.equals("yes"));
-            offset = 0;
+            List<Element> barLines = measureElement.getChildren("barline");
 
+            // TODO: refactor
+            BarLine startBarLine;
+            BarLine endBarLine;
+            if (!barLines.stream().filter(b -> b.getAttributeValue("location").equals("left")).toList().isEmpty()) {
+                startBarLine = BarLine.valueOf(barLines.stream().filter(b -> b.getAttributeValue("location").equals("left")).toList().getFirst()
+                        .getChildText("bar-style").toUpperCase().replace("-", "_"));
+            } else {
+                startBarLine = BarLine.REGULAR;
+            }
+            if (!barLines.stream().filter(b -> b.getAttributeValue("location").equals("right")).toList().isEmpty()) {
+                endBarLine = BarLine.valueOf(barLines.stream().filter(b -> b.getAttributeValue("location").equals("right")).toList().getFirst()
+                        .getChildText("bar-style").toUpperCase().replace("-", "_"));
+            } else {
+                endBarLine = BarLine.REGULAR;
+            }
+            Measure measure = new Measure(
+                    time,
+                    divisions,
+                    implicitString != null && implicitString.equals("yes"),
+                    startBarLine,
+                    endBarLine
+            );
+
+            offset = 0;
             for (Element e : measureElement.getChildren()) {
                 if (e.getName().equals("harmony")) {
                     measure.addHarmony(getHarmony(e));

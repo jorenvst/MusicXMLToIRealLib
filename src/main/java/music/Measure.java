@@ -17,6 +17,10 @@ public class Measure {
         this(time, divisions, implicit, new ArrayList<>(), BarLine.REGULAR, BarLine.REGULAR);
     }
 
+    public Measure(Time time, int divisions, boolean implicit, BarLine start, BarLine end) {
+        this(time, divisions, implicit, new ArrayList<>(), start, end);
+    }
+
     public Measure(Time time, int divisions, boolean implicit, List<Harmony> harmony, BarLine start, BarLine end) {
         this.time = time;
         this.divisions = divisions;
@@ -37,6 +41,18 @@ public class Measure {
 
     public List<Harmony> getHarmony() {
         return harmony;
+    }
+
+    public Time getTime() {
+        return time;
+    }
+
+    public BarLine getStartBarLine() {
+        return start;
+    }
+
+    public BarLine getEndBarLine() {
+        return end;
     }
 
     @Override

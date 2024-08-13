@@ -25,7 +25,7 @@ public class PartwiseMusicXMLConverter {
             return new Song(
                     JDOMUtils.getChildTextIfExists(root, "work", "work-title"),
                     composer,
-                    "todo",
+                    "style",
                     root.getChildren("part").stream()
                     .map(part -> new PartBuilder(part).build()).toList()
             );
