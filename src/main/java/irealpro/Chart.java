@@ -3,7 +3,15 @@ package irealpro;
 import music.*;
 import music.BarLine.BarLinePosition;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
 public class Chart {
+
+    private DuplicateFileResolver resolver;
 
     private final Song song;
     private final Part part;
@@ -11,10 +19,34 @@ public class Chart {
     public Chart(Song song, Part part) {
         this.song = song;
         this.part = part;
+
+        this.resolver = () -> false;
+    }
+
+    public void setDuplicateFileResolver(DuplicateFileResolver resolver) {
+        this.resolver = resolver;
     }
 
     public void export(String path) {
-        // TODO: implement
+        String fileName = song.getTitle() + ".html";
+        File export = new File(fileName);
+        if (Files.exists(Path.of(export.getAbsolutePath()))) {
+            if (resolver.override()) {
+                System.out.println("overriding existing file: " + export.getAbsolutePath());
+                if (export.delete()) {
+                    export(path);
+                }
+            } else {
+                System.out.println("file already exists: " + export.getAbsolutePath());
+            }
+        } else {
+            try (FileWriter writer = new FileWriter(fileName)) {
+                writer.write("<a href=\"" + this + "\">" + song.getTitle() + "</a>");
+                System.out.println("export success");
+            } catch (IOException e) {
+                System.out.println("could not create file");
+            }
+        }
     }
 
     @Override
