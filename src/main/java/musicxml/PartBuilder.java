@@ -1,9 +1,14 @@
 package musicxml;
 
-import music.*;
+import music.part.measure.Measure;
+import music.part.Part;
+import music.part.measure.BarLine;
+import music.part.measure.Harmony;
+import music.part.measure.Time;
 import org.jdom2.Element;
 import util.JDOMUtils;
-import util.PropertiesSupplier;
+import util.properties.PropertiesSupplier;
+import util.properties.PropertiesType;
 
 import java.util.List;
 
@@ -24,7 +29,7 @@ public class PartBuilder {
     public Part build() {
         // this only supports keys written using fifths
         // more info at: https://www.w3.org/2021/06/musicxml40/musicxml-reference/elements/key/
-        Part part = new Part().setKey(supplier.getKeyProperty(JDOMUtils.getChildTextIfExists(musicXMLPart, "measure", "attributes", "key", "fifths")));
+        Part part = new Part().setKey(supplier.getProperty(PropertiesType.KEYS, JDOMUtils.getChildTextIfExists(musicXMLPart, "measure", "attributes", "key", "fifths")));
 
         for (Element measureElement : musicXMLPart.getChildren("measure")) {
             setDivision(measureElement);
@@ -82,8 +87,8 @@ public class PartBuilder {
         Element timeElement = JDOMUtils.getChildIfExists(measureElement, "attributes", "time");
         if (timeElement != null) {
             String timeString = timeElement.getChildText("beats") + "/" + timeElement.getChildText("beat-type");
-            if (supplier.timePropertyExists(timeString)) {
-                time = Time.valueOf(supplier.getTimeProperty(timeString));
+            if (supplier.propertyExists(PropertiesType.KEYS, timeString)) {
+                time = Time.valueOf(supplier.getProperty(PropertiesType.TIME, timeString));
             }
         }
     }
@@ -92,10 +97,10 @@ public class PartBuilder {
         String root = JDOMUtils.getChildTextIfExists(harmonyElement, "root", "root-step");
         String rootAlter = JDOMUtils.getChildTextIfExists(harmonyElement, "root", "root-alter");
         if (rootAlter != null) {
-            root += supplier.getChordProperty(rootAlter);
+            root += supplier.getProperty(PropertiesType.CHORDS, rootAlter);
         }
 
-        String kind = supplier.getChordProperty(harmonyElement.getChildText("kind"));
+        String kind = supplier.getProperty(PropertiesType.CHORDS, harmonyElement.getChildText("kind"));
 
         String offsetString = JDOMUtils.getChildTextIfExists(harmonyElement, "offset");
         if (offsetString != null) {

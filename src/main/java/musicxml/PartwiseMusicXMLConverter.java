@@ -36,6 +36,6 @@ public class PartwiseMusicXMLConverter {
 
     public Collection<Chart> toCharts(String path) {
         Song song = readSong(path);
-        return song.getParts().stream().map(p -> new Chart(song, p)).toList();
+        return song.parts().stream().map(p -> new Chart(song, p)).toList();
     }
 }

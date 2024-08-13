@@ -1,36 +1,16 @@
 package music;
 
+import music.part.Part;
+
 import java.util.List;
 
-public class Song {
+/**
+ *
+ * @param title title of the song
+ * @param composer composer of the song
+ * @param style style of the song, this is unused currently
+ * @param parts a song can be built out of several parts, with each part containing a score
+ */
+public record Song(String title, Composer composer, String style, List<Part> parts) {
 
-    private final String title;
-    private final Composer composer;
-    private final String style;
-
-    private final List<Part> parts;
-
-    public Song(String title, Composer composer, String style, List<Part> parts) {
-        this.title = title;
-        this.composer = composer;
-        this.style = style;
-
-        this.parts = parts;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public Composer getComposer() {
-        return composer;
-    }
-
-    public String getStyle() {
-        return style;
-    }
-
-    public List<Part> getParts() {
-        return parts;
-    }
 }

@@ -1,4 +1,6 @@
-package music;
+package music.part;
+
+import music.part.measure.Measure;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,6 +11,9 @@ public class Part {
     private int divisions;
     private String key;
 
+    /**
+     * represents a part of a song
+     */
     public Part() {
         measures = new ArrayList<>();
         divisions = 1;
@@ -29,14 +34,6 @@ public class Part {
 
     public void addMeasure(Measure measure) {
         measures.add(measure);
-    }
-
-    public int getDivisions() {
-        return divisions;
-    }
-
-    public void setDivisions(int divisions) {
-        this.divisions = divisions;
     }
 
     @Override

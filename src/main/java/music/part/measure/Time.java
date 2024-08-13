@@ -1,6 +1,9 @@
-package music;
+package music.part.measure;
 
-// TODO: move to properties?
+/**
+ * contains all the possible time signatures with the amount of beats in a measure
+ */
+// TODO make not as enum, but record class, and have translation to ireal pro symbols in a properties file
 public enum Time {
     T44 {
         @Override

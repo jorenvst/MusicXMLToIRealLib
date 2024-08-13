@@ -2,6 +2,9 @@ package util;
 
 import org.jdom2.Element;
 
+/**
+ * utility class for performing operations on XML files using JDOM
+ */
 public class JDOMUtils {
 
     public static String getChildTextIfExists(Element element, String... children) {

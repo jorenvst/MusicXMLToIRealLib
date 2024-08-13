@@ -1,13 +1,20 @@
 package irealpro;
 
-import music.*;
-import music.BarLine.BarLinePosition;
+import music.Song;
+import music.part.Part;
+import music.part.measure.BarLine;
+import music.part.measure.BarLine.BarLinePosition;
+import music.part.measure.Harmony;
+import music.part.measure.Measure;
+import music.part.measure.Time;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Writer;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * represents an IRealPro chord chart
@@ -29,6 +36,7 @@ public class Chart {
         this.song = song;
         this.part = part;
 
+        // do not override existing files by default when exporting
         this.resolver = () -> false;
     }
 
@@ -41,13 +49,22 @@ public class Chart {
     }
 
     /**
+     * export this chart to a .html file in the current working directory
+     */
+    public void export() {
+        export(System.getProperty("user.dir"));
+    }
+
+    /**
      * export this chart to a .html file
      * more info on IReal Pro file format: <a href="https://www.irealpro.com/ireal-pro-custom-chord-chart-protocol">format</a>
-     * @param path place where the file should be saved, is not used currently
+     * @param path place where the file should be saved
      */
-    // TODO: use path
     public void export(String path) {
-        String fileName = song.getTitle() + ".html";
+        if (path.charAt(path.length() - 1) != '/'){
+            path += "/";
+        }
+        String fileName = path + song.title() + ".html";
         File export = new File(fileName);
 
         if (Files.exists(Path.of(export.getAbsolutePath()))) {
@@ -70,18 +87,19 @@ public class Chart {
      * @param fileName the filename to write to
      */
     private void write(String fileName) {
-        try (FileWriter writer = new FileWriter(fileName)) {
-            writer.write("<a href=\"" + this + "\">" + song.getTitle() + "</a>");
-            System.out.println("export success");
+        try (Writer writer = Files.newBufferedWriter(Paths.get(fileName), Charset.defaultCharset())) {
+            writer.write("<a href=\"" + this + "\">" + song.title() + "</a>");
+            System.out.println("export succes");
         } catch (IOException e) {
             System.out.println("could not create file");
+            System.out.println(e + "");
         }
     }
 
     /**
      * calls the resolver.override() method to check what to do when the file it wants to export to, already exists
      * if this returns true, the already existing file will be overridden
-     * @param path place to export to, not used currently
+     * @param path place to export to
      * @param export the already existing file
      */
     private void resolveDuplicate(String path, File export) {
@@ -99,9 +117,9 @@ public class Chart {
      * @return the header for the custom IReal Pro URL containing its metadata
      */
     private String buildMetaData() {
-        return "irealbook://" + song.getTitle() + "=" +
-                song.getComposer().lastName() + " " + song.getComposer().firstName() + "=" +
-                song.getStyle() + "=" +
+        return "irealbook://" + song.title() + "=" +
+                song.composer().lastName() + " " + song.composer().firstName() + "=" +
+                song.style() + "=" +
                 part.getKey() + "=n=";
     }
 
