@@ -3,11 +3,8 @@ package core.converter.irealpro;
 import core.converter.SongConverter;
 import core.exportable.irealpro.Chart;
 import music.*;
-import old.util.properties.PropertiesSupplier;
-import old.util.properties.PropertiesType;
-
-import java.io.IOException;
-import java.util.Properties;
+import util.PropertiesSupplier;
+import util.PropertiesType;
 
 public class IRealProConverter implements SongConverter {
 
