@@ -63,7 +63,7 @@ class MusicXMLPartReader {
             if (element.getName().equals("harmony")) {
                 harmony.put(pos / divisions, buildHarmony(element));
             } else if (element.getName().equals("note")) {
-                String durationString = old.util.JDOMUtils.getChildTextIfExists(element, "duration");
+                String durationString = JDOMUtils.getChildTextIfExists(element, "duration");
                 if (durationString != null) {
                     pos += Integer.parseInt(durationString);
                 }
@@ -74,8 +74,8 @@ class MusicXMLPartReader {
     }
 
     private Harmony buildHarmony(Element harmony) {
-        String root = old.util.JDOMUtils.getChildTextIfExists(harmony, "root", "root-step");
-        String rootAlter = old.util.JDOMUtils.getChildTextIfExists(harmony, "root", "root-alter");
+        String root = JDOMUtils.getChildTextIfExists(harmony, "root", "root-step");
+        String rootAlter = JDOMUtils.getChildTextIfExists(harmony, "root", "root-alter");
         if (rootAlter != null) {
             root += supplier.getProperty(PropertiesType.CHORDS, rootAlter);
         }
