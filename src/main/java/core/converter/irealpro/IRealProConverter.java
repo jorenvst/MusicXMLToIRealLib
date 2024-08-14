@@ -27,7 +27,7 @@ public class IRealProConverter implements SongConverter {
             if (measure.isImplicit()) continue;
 
             if (time == null || !measure.time().equals(time)) {
-                body.append(supplier.getProperty(PropertiesType.CHORDS, measure.time() + ""));
+                body.append(supplier.getProperty(PropertiesType.TIME, measure.time() + ""));
             }
             time = measure.time();
 
