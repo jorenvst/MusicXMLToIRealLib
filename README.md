@@ -9,7 +9,7 @@ The <code>Converter</code> class is capable of reading a file from a path and co
 You can use it in your code as follows:
 
     File file = new File("path/to/file.musicxml");
-    Chart chart = Converter.convert(FromFormat.MUSICXML, ToFormat.IREAL_PRO, file);
+    Exportable chart = Converter.convert(FromFormat.MUSICXML, ToFormat.IREAL_PRO, file);
 
 This code converts and builds each part of a partwise <code>.musicxml</code> into a <code>.html</code> for IReal Pro. 
 A chart can be exported as follows:
