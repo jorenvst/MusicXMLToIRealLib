@@ -2,21 +2,23 @@
 
 <h2> 1. The project</h2>
 
-This is a Java library for converting <code>.musicxml</code> to <code>.html</code> for [IReal Pro](https://www.irealpro.com).
+This is a Java library for converting uncompressed <code>.musicxml</code> to <code>.html</code> for [IReal Pro](https://www.irealpro.com).
 
 <h2>2. Usage</h2>
-The <code>MusicXMLConverter</code> class is capable of reading a file from a path and converting it to an <code>IRealProDocument</code>.<br>
+The <code>Converter</code> class is capable of reading a file from a path and converting it to an IReal Pro <code>Chart</code>.<br>
 You can use it in your code as follows:
 
-    MusicXMLConverter converter = new MusicXMLConverter();
-    List<IRealProDocument> docs = converter.convert("path/to/file.musicxml");
-    
-    for (IRealProDocument doc : docs) {
-        doc.build();
-    }
+    File file = new File("path/to/file.musicxml");
+    Chart chart = Converter.convert(FromFormat.MUSICXML, ToFormat.IREAL_PRO, file);
 
-This code converts and builds each part of a partwise <code>.musicxml</code> into a <code>.html</code> for IReal Pro. The files are built in the directory from where the application was launched.<br>
-Full documentation: see next chapter.
+This code converts and builds each part of a partwise <code>.musicxml</code> into a <code>.html</code> for IReal Pro. 
+A chart can be exported as follows:
+    
+    File file = new File("path/to/file.musicxml");
+    Converter.convert(FromFormat.MUSICXML, ToFormat.IREAL_PRO, file).export();
+
+
+Full documentation: see <b>4.</b>
 
 <h2>3. Dependencies</h2>
 
@@ -24,55 +26,66 @@ This project needs [JDOM v2.0.6.1](https://mvnrepository.com/artifact/org.jdom/j
 
 <h2>4. Documentation</h2>
 
-<h3>MusicXMLReader</h3>
+This documentation is incomplete, but includes the most important methods for converting files.
 
-<b><i>methods:</i></b>
-
-<ul>
-    <li>
-    <code>public List&lt;Song> readSongs(String path)</code><br>
-    read each part of a partwise <code>.musicxml</code> into a <code>Song</code>.
-    </li><br>
-    <li>
-    <code>public Song readSongPart(String path, int partNum)</code><br>
-    read a part by index of a partwise <code>.musicxml</code> into a <code>Song</code>.
-    </li><br>
-</ul>
-
-
-<h3>MusicXMLConverter</h3>
-
+<h3><i>interface</i> core.exportable.Exportable</h3>
 <b><i>methods:</i></b>
 <ul>
     <li>
-    <code>public List&lt;IRealProDocument> convert(String path)</code><br>
-    convert each part of a partwise <code>.musicxml</code> into a <code>IRealProDocument</code>.
-    </li><br>
+    <code>default void export();</code><br>
+    export this exportable to a file into the users working directory.
+    </li>
     <li>
-    <code>public IRealProDocument convertPart(String path, int part)</code><br>
-    convert a part by index from a partwise <code>.musicxml</code> into a <code>IRealProDocument</code>.
-    </li><br>
-    <li>
-    <code>public IRealProDocument convertPart(String path)</code><br>
-    convert the first part from a partwise <code>.musicxml</code> into a <code>IRealProDocument</code>.<br>
-    Is equivalent to <code>convertPart(path, 0)</code>.
+    <code>void export(String path);</code><br>
+    export this exportable to a file in the directory specified by <code>path</code>.
+    this should be implemented by the inheritor from Exportable.
     </li>
 </ul>
 
-
-<h3>IRealProDocument</h3>
-
-<b><i>methods:</i></b>
-
+<h3><i>enum</i> core.FromFormat</h3>
+<b><i>values:</i></b>
 <ul>
     <li>
-    <code>public void build(String path)</code><br>
-    save the <code>IRealProDocument</code> to <code>.html</code> for IReal Pro.<br>
-    The file is saved in the directory where the path points to.
+    <code>MUSICXML</code>
+    </li>
+</ul>
+<b><i>methods:</i></b>
+<ul>
+    <li>
+    <code>public SongReader reader();</code><br>
+    provides an implementation for SongReader that can read the file format associated with the enum value.
+    </li><br>
+</ul>
+
+<h3><i>enum</i> core.ToFormat</h3>
+<b><i>values:</i></b>
+<ul>
+    <li>
+    <code>IREAL_PRO</code>
+    </li>
+</ul>
+<b><i>methods:</i></b>
+<ul>
+    <li>
+    <code>public SongConverter converter();</code><br>
+    provides an implementation for SongConverter that can convert a Song to the associated enum value.
+    </li><br>
+</ul>
+
+<h3><i>class</i> core.Converter</h3>
+<b><i>methods:</i></b>
+<ul>
+    <li>
+    <code>public static Exportable convert(FromFormat from, ToFormat to, File file);</code><br>
+    convert a file from a format to a format.
+    Returns an Exportable
     </li><br>
     <li>
-    <code>public void build()</code><br>
-    save the <code>IRealProDocument</code> to <code>.html</code> for IReal Pro.<br>
-    The file is saved to the directory where the application was launched from.
+    <code>public static void convertThenConvert(FromFormat from, ToFormat to, File file);</code><br>
+    export a file from a format to a format in the current working directory.
+    </li><br>
+<li>
+    <code>public static void convertThenConvert(FromFormat from, ToFormat to, File file, String path);</code><br>
+    export a file from a format to a format in the directory specified by <code>path</code>.
     </li><br>
 </ul>
