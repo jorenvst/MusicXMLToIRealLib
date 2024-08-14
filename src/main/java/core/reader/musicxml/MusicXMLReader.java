@@ -24,7 +24,7 @@ public class MusicXMLReader implements SongReader {
             return new Song(
                     JDOMUtils.getChildTextIfExists(root, "work", "work-title"),
                     getComposer(root),
-                    "unkown",
+                    "unknown",
                     root.getChildren("part").stream().map(part -> new MusicXMLPartReader().readPart(part)).toList()
             );
         } catch (IOException | JDOMException e) {

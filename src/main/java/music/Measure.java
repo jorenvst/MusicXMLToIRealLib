@@ -1,5 +1,6 @@
 package music;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class Measure {
@@ -14,7 +15,7 @@ public class Measure {
 
     public Measure(Time time, Map<Integer, Harmony> harmony, boolean implicit) {
         this.time = time;
-        this.harmony = harmony;
+        this.harmony = new HashMap<>(harmony);
         this.implicit = implicit;
     }
 
@@ -30,4 +31,8 @@ public class Measure {
         return implicit;
     }
 
+    @Override
+    public String toString() {
+        return time + " " + harmony.values();
+    }
 }

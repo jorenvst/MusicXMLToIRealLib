@@ -28,7 +28,7 @@ public class JDOMUtils {
     }
 
     public static Element getChildWithAttribute(Element element, String attributeName, String attributeValue, String... children) {
-        List<Element> candidates = getChildrenIfExists(element, children).stream().filter(e -> e.getAttributeValue("attributeName").equals("attributeValue")).toList();
+        List<Element> candidates = getChildrenIfExists(element, children).stream().filter(e -> e.getAttributeValue(attributeName).equals(attributeValue)).toList();
         if (candidates.isEmpty()) {
             return null;
         } else {

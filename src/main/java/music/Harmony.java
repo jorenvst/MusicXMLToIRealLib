@@ -27,4 +27,9 @@ public class Harmony {
     public String bass() {
         return bass;
     }
+
+    @Override
+    public String toString() {
+        return root + kind;
+    }
 }
