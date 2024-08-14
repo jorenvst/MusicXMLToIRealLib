@@ -13,6 +13,12 @@ public class Measure {
         this(time, harmony, false);
     }
 
+    /**
+     * represents a Measure
+     * @param time time signature of this measure
+     * @param harmony a Map containing the position of the chord mapped to the chord itself
+     * @param implicit if a measure is implicit, it is mostly a pick-up measure and can be ignored in some cases
+     */
     public Measure(Time time, Map<Integer, Harmony> harmony, boolean implicit) {
         this.time = time;
         this.harmony = new HashMap<>(harmony);

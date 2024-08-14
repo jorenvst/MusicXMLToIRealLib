@@ -7,6 +7,10 @@ public enum PropertiesType {
 
     private final String file;
 
+    /**
+     * enum that points to a properties file
+     * @param file the filename of the properties file
+     */
     PropertiesType(String file) {
         this.file = file;
     }

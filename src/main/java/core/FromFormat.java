@@ -8,10 +8,18 @@ public enum FromFormat {
 
     private final SongReader reader;
 
+    /**
+     * used to specify from what file format a Song object should be constructed
+     * @param reader implementation of SongReader for this type of file format
+     */
     FromFormat(SongReader reader) {
         this.reader = reader;
     }
 
+    /**
+     * get the SongReader implementation
+     * @return SongReader implementation
+     */
     public SongReader reader() {
         return reader;
     }

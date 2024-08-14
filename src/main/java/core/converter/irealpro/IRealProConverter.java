@@ -10,16 +10,29 @@ public class IRealProConverter implements SongConverter {
 
     private final PropertiesSupplier supplier;
 
+    /**
+     * class for converting Song into a Chart
+     */
     public IRealProConverter() {
         supplier = new PropertiesSupplier();
     }
 
+    /**
+     * convert a song into a Chart
+     * @param song the song to convert
+     * @return the Chart
+     */
     @Override
     public Chart convert(Song song) {
         Part part = song.parts().getFirst();
         return new Chart(song.title(), song.composer(), song.style(), part.key(), constructBody(part));
     }
 
+    /**
+     * construct the body of the IReal Pro chart in the correct format
+     * @param part the part to convert
+     * @return the converted body in the correct format for IReal Pro
+     */
     private String constructBody(Part part) {
         StringBuilder body = new StringBuilder();
         Time time = null;

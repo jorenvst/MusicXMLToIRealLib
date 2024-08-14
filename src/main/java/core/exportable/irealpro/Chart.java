@@ -19,6 +19,14 @@ public class Chart implements Exportable {
 
     private final String body;
 
+    /**
+     *
+     * @param title title of this Chart
+     * @param composer composer of this Chart
+     * @param style the style of music, currently unused when a Song is constructed from MusicXML
+     * @param key the key of this song, e.g. Ab
+     * @param body the song itself in IReal Pro notation
+     */
     public Chart(String title, Composer composer, String style, String key, String body) {
         this.title = title;
         this.composer = composer;
@@ -28,6 +36,10 @@ public class Chart implements Exportable {
         this.body = body;
     }
 
+    /**
+     * export this Chart to a file specified by path
+     * @param path the place to save this file to
+     */
     @Override
     public void export(String path) {
         if (path.charAt(path.length() - 1) != '/'){
