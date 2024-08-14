@@ -61,7 +61,7 @@ class MusicXMLPartReader {
         int pos = 0;
         for (Element element : measure.getChildren()) {
             if (element.getName().equals("harmony")) {
-                harmony.put(pos, buildHarmony(element));
+                harmony.put(pos / divisions, buildHarmony(element));
             } else if (element.getName().equals("note")) {
                 String durationString = old.util.JDOMUtils.getChildTextIfExists(element, "duration");
                 if (durationString != null) {
