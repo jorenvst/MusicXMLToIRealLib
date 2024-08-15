@@ -14,4 +14,6 @@ public interface Exportable {
     default void export() {
         export(System.getProperty("user.dir"));
     }
+
+    void setResolver(DuplicateFileResolver resolver);
 }

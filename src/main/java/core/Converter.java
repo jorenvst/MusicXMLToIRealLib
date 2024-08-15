@@ -1,16 +1,19 @@
 package core;
 
+import core.exportable.DuplicateFileResolver;
 import core.exportable.Exportable;
 
 import java.io.File;
 
 public class Converter {
 
+    private DuplicateFileResolver resolver;
+
     /**
      * utility class for converting files from one format to another
      */
     public Converter() {
-
+        resolver = () -> false;
     }
     
     /**
@@ -20,7 +23,7 @@ public class Converter {
      * @param file the file that needs to be converted
      * @return an Exportable format
      */
-    public static Exportable convert(FromFormat from, ToFormat to, File file) {
+    public Exportable convert(FromFormat from, ToFormat to, File file) {
         return to.converter().convert(from.reader().read(file));
     }
 
@@ -30,8 +33,10 @@ public class Converter {
      * @param to format of the Exportable
      * @param file the file that needs to be converted
      */
-    public static void convertThenExport(FromFormat from, ToFormat to, File file) {
-        convert(from, to, file).export();
+    public void convertThenExport(FromFormat from, ToFormat to, File file) {
+        Exportable exportable = convert(from, to, file);
+        exportable.setResolver(resolver);
+        exportable.export();
     }
 
     /**
@@ -41,7 +46,14 @@ public class Converter {
      * @param file the file that needs to be converted
      * @param path place where the file should be exported to
      */
-    public static void convertThenExport(FromFormat from, ToFormat to, File file, String path) {
-        convert(from, to, file).export(path);
+    public void convertThenExport(FromFormat from, ToFormat to, File file, String path) {
+        Exportable exportable = convert(from, to, file);
+        exportable.setResolver(resolver);
+        exportable.export(path);
+    }
+
+    public Converter setResolver(DuplicateFileResolver resolver) {
+        this.resolver = resolver;
+        return this;
     }
 }

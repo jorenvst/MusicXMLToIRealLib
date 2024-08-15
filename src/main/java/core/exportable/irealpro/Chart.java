@@ -1,5 +1,6 @@
 package core.exportable.irealpro;
 
+import core.exportable.DuplicateFileResolver;
 import core.exportable.Exportable;
 import music.Composer;
 
@@ -8,6 +9,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class Chart implements Exportable {
@@ -18,6 +20,8 @@ public class Chart implements Exportable {
     private final String key;
 
     private final String body;
+
+    private DuplicateFileResolver resolver;
 
     /**
      *
@@ -34,6 +38,11 @@ public class Chart implements Exportable {
         this.key = key;
 
         this.body = body;
+        this.resolver = () -> false;
+    }
+
+    public void setResolver(DuplicateFileResolver resolver) {
+        this.resolver = resolver;
     }
 
     /**
@@ -47,8 +56,20 @@ public class Chart implements Exportable {
         }
 
         String fileName = path + title + ".html";
+        Path filePath = Paths.get(fileName);
+        if (Files.exists(filePath)) {
+            if (resolver.resolve()) {
+                try {
+                    Files.delete(filePath);
+                } catch (IOException e) {
+                    System.out.println("could not delete file");
+                }
+            } else {
+                return;
+            }
+        }
 
-        try (Writer writer = Files.newBufferedWriter(Paths.get(fileName), Charset.defaultCharset())) {
+        try (Writer writer = Files.newBufferedWriter(filePath, Charset.defaultCharset())) {
             writer.write(this + "");
             System.out.println("export succes");
         } catch (IOException e) {
