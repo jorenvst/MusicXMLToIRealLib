@@ -57,7 +57,9 @@ public class Chart implements Exportable {
 
         String fileName = path + title + ".html";
         Path filePath = Paths.get(fileName);
+
         if (Files.exists(filePath)) {
+            System.out.println("this file already exists");
             if (resolver.resolve()) {
                 try {
                     Files.delete(filePath);

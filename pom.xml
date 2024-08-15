@@ -6,7 +6,7 @@
 
     <groupId>vst</groupId>
     <artifactId>MusicXMLToIRealLib</artifactId>
-    <version>v0.2-alpha</version>
+    <version>v0.2.1-alpha</version>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
