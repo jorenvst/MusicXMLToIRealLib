@@ -72,7 +72,7 @@ public class Chart implements Exportable {
         }
 
         try (Writer writer = Files.newBufferedWriter(filePath, Charset.defaultCharset())) {
-            writer.write(this + "");
+            writer.write(this + "\n");
             System.out.println("export succes");
         } catch (IOException e) {
             System.out.println("could not create file");
