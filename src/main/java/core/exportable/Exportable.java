@@ -15,5 +15,9 @@ public interface Exportable {
         export(System.getProperty("user.dir"));
     }
 
+    /**
+     * set a function that returns a boolean if a file should be overridden while exporting an Exportable
+     * @param resolver the implementation to use
+     */
     void setResolver(DuplicateFileResolver resolver);
 }

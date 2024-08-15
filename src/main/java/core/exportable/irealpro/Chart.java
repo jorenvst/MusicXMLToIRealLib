@@ -46,7 +46,7 @@ public class Chart implements Exportable {
     }
 
     /**
-     * export this Chart to a file specified by path
+     * export this Chart to a file specified by path, check if it doesn't already exist first
      * @param path the place to save this file to
      */
     @Override

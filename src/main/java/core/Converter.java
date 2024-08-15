@@ -52,6 +52,11 @@ public class Converter {
         exportable.export(path);
     }
 
+    /**
+     * set the function to determine if a file should be overridden when exporting an Exportable
+     * @param resolver implementation to use
+     * @return itself
+     */
     public Converter setResolver(DuplicateFileResolver resolver) {
         this.resolver = resolver;
         return this;
